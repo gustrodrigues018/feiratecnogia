@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Escolha seu Projeto</title>
+    <link rel="stylesheet" href="cursos.css">
+    <style>
+        .project-detalhes {
+            display: none;
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+        }
+        .project {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        h3 {
+            cursor: pointer;
+            user-select: none;
+        }
+        .material-bloqueado {
+            color: #888;
+            font-style: italic;
+        }
+        a {
+            color: #90e0ef;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        button {
+            cursor: pointer;
+            padding: 6px 12px;
+            background-color: #0077cc;
+            border: none;
+            color: white;
+            border-radius: 4px;
+            margin-top: 5px;
+        }
+        button:hover {
+            background-color: #005fa3;
+        }
+        input[type="text"] {
+            padding: 5px;
+            width: 200px;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <nav>
+        <ul>
+            <li class="active">Cursos</li>
+            <li><a href="usuario.html" style="color: white;">Usuário</a></li>
+            <li><a href="terminal.html" style="color: white;">Terminal</a></li>
+
+
+        </ul>
+    </nav>
+    <div class="user-photo-container" title="Adicionar foto">
+        <img id="userPhoto" src="" alt="Foto do Usuário" />
+        <input type="file" id="photoInput" accept="image/*" />
+    </div>
+</header>
+
+<main>
+    <h2>Escolha um Projeto para Aprender</h2>
+    <div id="projetos"></div>
+</main>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const projetosDiv = document.getElementById("projetos");
+
+        if (projetosDiv) {
+            const projetos = [
+                {
+                    nome: "Calculadora Simples",
+                    descricao: "Uma calculadora básica.",
+                    icon: "📈",
+                    introducao: "Aprenda operações matemáticas básicas com JavaScript.",
+                    dataLiberacao: "2025-05-25T15:00:00"
+                },
+                {
+                    nome: "Conversor de Moedas",
+                    descricao: "Converta moedas facilmente.",
+                    icon: "💸",
+                    introducao: "Entenda como usar APIs de câmbio em tempo real.",
+                    dataLiberacao: "2025-05-23T17:20:00"
+                }
+            ];
+
+            projetos.forEach((projeto, index) => {
+                const projetoDiv = document.createElement("div");
+                projetoDiv.className = "project";
+
+                projetoDiv.innerHTML = `
+                    <h3>${projeto.icon} ${projeto.nome}</h3>
+                    <p>${projeto.descricao}</p>
+                    <div class="project-detalhes" id="detalhes-${index}">
+                        <p><strong>Introdução:</strong> ${projeto.introducao}</p>
+                        <form onsubmit="inscreverUsuario(event, '${projeto.nome}')">
+                            <input type="text" name="nomeAluno" placeholder="Seu nome" required />
+                            <button type="submit">Inscrever</button>
+                        </form>
+                        <div class="material-didatico" id="material-${index}">
+                            ${checarLiberacao(projeto.dataLiberacao) ?
+                                '<a href="#" target="_blank" rel="noopener noreferrer">📘 Acessar material didático</a>' :
+                                `<p class="material-bloqueado">⏰ Material disponível a partir de: ${formatarData(projeto.dataLiberacao)}</p>`
+                            }
+                        </div>
+                    </div>
+                `;
+
+                // O clique para abrir/fechar fica só no título <h3>
+                const titulo = projetoDiv.querySelector("h3");
+                const detalhes = projetoDiv.querySelector(".project-detalhes");
+
+                titulo.addEventListener("click", () => {
+                    detalhes.style.display = detalhes.style.display === "block" ? "none" : "block";
+                });
+
+                projetosDiv.appendChild(projetoDiv);
+            });
+        }
+    });
+
+    function checarLiberacao(data) {
+        const agora = new Date();
+        const dataLiberada = new Date(data);
+        return agora >= dataLiberada;
+    }
+
+    function formatarData(data) {
+        const d = new Date(data);
+        return d.toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" });
+    }
+
+    function inscreverUsuario(event, projeto) {
+        event.preventDefault();
+        const nomeAluno = event.target.nomeAluno.value.trim();
+
+        if (!nomeAluno) {
+            alert("Por favor, preencha seu nome.");
+            return;
+        }
+
+        let lista = JSON.parse(localStorage.getItem(`inscritos_${projeto}`)) || [];
+
+        lista.push(nomeAluno);
+
+        localStorage.setItem(`inscritos_${projeto}`, JSON.stringify(lista));
+
+        alert(`Inscrição confirmada para ${nomeAluno} no projeto "${projeto}"!`);
+        event.target.reset();
+    }
+</script>
+
+</body>
+</html>

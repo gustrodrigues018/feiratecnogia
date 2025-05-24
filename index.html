@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cadastro/Login</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
+</head>
+<body>
+  <div id="tsparticles"></div>
+  <div class="cadastro">
+    
+    <!-- Formulário de Cadastro -->
+    <form id="cadastroForm">
+      <h1>Oficina de Programação - Cadastro</h1>
+      <label for="nome">Nome:</label>
+      <input type="text" id="nome" required />
+      <label for="email">Email:</label>
+      <input type="email" id="email" required />
+      <label for="nivel">Nível de Conhecimento:</label>
+      <select id="nivel" required>
+        <option value="">Selecione</option>
+        <option value="iniciante">Iniciante</option>
+        <option value="intermediario">Intermediário</option>
+        <option value="avancado">Avançado</option>
+      </select>
+      <button type="submit">Cadastrar</button>
+      <div style="text-align: center; margin-bottom: 20px;">
+        <button class="toggleFormBtn" type="button">Já tem conta? Faça login</button>
+      </div>
+    </form>
+
+    <!-- Formulário de Login -->
+    <form id="loginForm" style="display: none;">
+      <h1>Login</h1>
+      <label for="loginNome">Nome:</label>
+      <input type="text" id="loginNome" required />
+      <label for="loginEmail">Email:</label>
+      <input type="email" id="loginEmail" required />
+      <button type="submit">Entrar</button>
+      <div style="text-align: center; margin-bottom: 20px;">
+        <button class="toggleFormBtn" type="button">Ainda não tem conta? Cadastre-se</button>
+      </div>      
+    </form>
+
+    <!-- Mensagem de erro -->
+    <div id="mensagemErro" class="mensagem-erro" style="display: none;">
+      Usuário não encontrado. Cadastre-se primeiro!
+    </div>
+  </div>
+
+  <script>
+    // Partículas de fundo
+    tsParticles.load("tsparticles", {
+      background: { color: { value: "#050d1a" } },
+      fpsLimit: 60,
+      interactivity: {
+        events: { onHover: { enable: true, mode: "attract" }, resize: true },
+        modes: { attract: { distance: 200, duration: 0.4, speed: 1 } },
+      },
+      particles: {
+        color: { value: "#ffffff" },
+        links: { enable: false },
+        collisions: { enable: false },
+        move: {
+          direction: "none",
+          enable: true,
+          outModes: { default: "bounce" },
+          random: true,
+          speed: 1,
+          straight: false,
+        },
+        number: {
+          density: { enable: true, area: 800 },
+          value: 60,
+        },
+        opacity: { value: 0.5 },
+        shape: { type: "circle" },
+        size: { value: { min: 2, max: 4 } },
+      },
+      detectRetina: true,
+    });
+
+    // Alternância de formulários
+    const toggleBtns = document.querySelectorAll(".toggleFormBtn");
+    const formCadastro = document.getElementById("cadastroForm");
+    const formLogin = document.getElementById("loginForm");
+
+    toggleBtns.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const mostrandoCadastro = formCadastro.style.display !== "none";
+        formCadastro.style.display = mostrandoCadastro ? "none" : "block";
+        formLogin.style.display = mostrandoCadastro ? "block" : "none";
+      });
+    });
+
+    // Cadastro
+    formCadastro.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const nome = document.getElementById("nome").value;
+      const email = document.getElementById("email").value;
+      const nivel = document.getElementById("nivel").value;
+      localStorage.setItem("usuario", JSON.stringify({ nome, email, nivel }));
+      window.location.href = "usuario.html";
+    });
+
+    // Login
+    formLogin.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const nomeLogin = document.getElementById("loginNome").value;
+      const emailLogin = document.getElementById("loginEmail").value;
+      const usuarioSalvo = JSON.parse(localStorage.getItem("usuario"));
+
+      if (
+        usuarioSalvo &&
+        usuarioSalvo.nome === nomeLogin &&
+        usuarioSalvo.email === emailLogin
+      ) {
+        window.location.href = "usuario.html";
+      } else {
+        const msg = document.getElementById("mensagemErro");
+        msg.style.display = "block";
+        setTimeout(() => (msg.style.display = "none"), 3000);
+      }
+    });
+  </script>
+</body>
+</html>

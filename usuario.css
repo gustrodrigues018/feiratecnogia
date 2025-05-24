@@ -1,0 +1,208 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #0b1223;
+    color: #eee;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Reset básico */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+/* Cabeçalho */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #1b263b; /* azul escuro */
+    padding: 15px 20px;
+}
+
+/* Navegação */
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+    margin: 0;
+    padding: 0;
+}
+
+nav ul li {
+    font-weight: bold;
+    color: white;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: white;
+}
+
+/* Item ativo no menu */
+nav ul li.active {
+    background-color: #415a77;
+    padding: 6px 12px;
+    border-radius: 5px;
+}
+
+/* Container da foto */
+.user-photo-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.user-photo-container img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid #90e0ef;
+    object-fit: cover;
+}
+
+.user-photo-container input[type="file"] {
+    display: none;
+}
+
+
+/* ======= ALTERAÇÕES PRINCIPAIS ======= */
+main {
+    background: rgba(255, 255, 255, 0.15); /* branco com transparência, deixa apagado */
+    padding: 50px 40px 40px 40px; /* mantive espaçamento pra afastar do menu */
+    max-width: 700px;
+    width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 6px 20px rgba(0, 170, 255, 0.15); /* sombra mais suave */
+    color: #ffffff; /* azul escuro para texto */
+    margin: 200px auto 28vh auto; /* aumentei margem top pra afastar mais do header fixo */
+    flex-grow: 1;
+    text-align: center;
+    font-weight: 600;
+    height: 500px; /* pro main não ficar esquisito */
+    backdrop-filter: blur(8px); /* blur pra dar aquele toque chique e suave */
+}
+
+
+h1 {
+    margin-bottom: 30px;
+    color: #007acc; /* azul vibrante */
+}
+
+/* Container geral do perfil */
+.profile-container {
+    display: flex;
+    align-items: center;
+    gap: 50px; /* mais espaço entre foto e infos */
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Seção da foto */
+.photo-section {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid #007acc; /* borda azul */
+    cursor: pointer;
+    flex-shrink: 0;
+    background: #e0f0ff; /* fundo clarinho */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.photo-section img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 50%;
+}
+
+/* input de upload invisível mas clicável */
+.photo-section input[type="file"] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+/* Ícone lápis dentro da foto */
+.icon-pencil {
+    position: absolute;
+    width: 48px;
+    height: 48px;
+    pointer-events: none;
+    fill: #007acc;
+}
+
+/* Oculta imagem se src vazio */
+.photo-section img[src=""], 
+.photo-section img:not([src]) {
+    display: none;
+}
+
+/* Exibe lápis se não tiver imagem */
+.photo-section img[src=""] + .icon-pencil,
+.photo-section img:not([src]) + .icon-pencil {
+    display: flex;
+    margin: auto;
+}
+
+/* Oculta lápis se imagem tiver src */
+.photo-section img[src]:not([src=""]) + .icon-pencil {
+    display: none;
+}
+
+.info-section p {
+    font-size: 1.3rem;
+    margin-bottom: 18px;
+    word-break: break-word;
+    text-align: left;
+    max-width: 320px;
+    color: #005f99; /* azul escuro */
+}
+
+.info-section strong {
+    color: #007acc;
+}
+
+/* Responsivo */
+@media(max-width: 600px) {
+    .profile-container {
+        flex-direction: column;
+    }
+
+    .photo-section {
+        width: 120px;
+        height: 120px;
+    }
+
+    .info-section p {
+        max-width: 100%;
+        text-align: center;
+    }
+}
+
+.info-section p {
+    color: #d0eaff; /* azul clarinho, contraste forte */
+}
