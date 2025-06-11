@@ -166,6 +166,7 @@
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.3.0/firebase-app.js";
       import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.3.0/firebase-auth.js";
       import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.3.0/firebase-firestore.js";
+      import { setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.3.0/firebase-auth.js";
 
       const firebaseConfig = {
         apiKey: "SUA_API_KEY",
@@ -227,7 +228,22 @@
         const savedProfilePhoto = localStorage.getItem('userProfilePhoto');
         profilePhoto.src = savedProfilePhoto || 'https://via.placeholder.com/140?text=Usu';
       }
-
+        
+setPersistence(auth, browserLocalPersistence)
+  .then(() => {
+    // Persistência configurada, agora escuta o estado
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // Usuário logado — seu código aqui
+      } else {
+        alert("Você não está logado.");
+        window.location.href = "login.html";
+      }
+    });
+  })
+  .catch((error) => {
+    console.error("Erro ao configurar persistência:", error);
+  });
       // Escuta login e carrega dados do perfil
       onAuthStateChanged(auth, async (user) => {
         if (user) {
