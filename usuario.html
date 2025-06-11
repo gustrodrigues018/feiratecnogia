@@ -160,99 +160,105 @@
             color: #555;
         }
     </style>
-</head>
-<body>
-    <header>
-        <nav>
-            <ul>
-                <li><a href="cursos.html" style="color: white;">Cursos</a></li>
-                <li class="active">Usuários</li>
-                <li><a href="terminal.html" style="color: white;">Terminal</a></li>
 
-            </ul>
-        </nav>
-        <div class="user-photo-container" title="Adicionar foto">
-            <img id="userPhoto" src="" alt="Foto do Usuário" />
-            <input type="file" id="photoInput" accept="image/*" />
-        </div>
-    </header>
+    <!-- Firebase SDK - modular version -->
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.3.0/firebase-app.js";
+      import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.3.0/firebase-auth.js";
+      import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.3.0/firebase-firestore.js";
 
-    <main>
-        <h1>Perfil do Usuário</h1>
-        <div class="profile-container">
-            <div class="photo-section" title="Clique para adicionar foto">
-                <img id="mainUserPhoto" src="" alt="Foto do Usuário" />
-                <div class="icon-pencil" aria-hidden="true">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" width="24" height="24">
-                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM21.41 6.34a1.25 1.25 0 0 0 0-1.77l-2-2a1.25 1.25 0 0 0-1.77 0l-1.83 1.83 3.75 3.75 1.85-1.81z"/>
-                    </svg>
-                </div>
-                <input type="file" id="mainPhotoInput" accept="image/*" />
-            </div>
+      const firebaseConfig = {
+        apiKey: "SUA_API_KEY",
+        authDomain: "SEU_AUTH_DOMAIN",
+        projectId: "SEU_PROJECT_ID",
+        storageBucket: "SEU_STORAGE_BUCKET",
+        messagingSenderId: "SEU_MESSAGING_SENDER_ID",
+        appId: "SEU_APP_ID"
+      };
 
-            <div class="info-section">
-                <p><strong>Nome:</strong> <span id="nome"></span></p>
-                <p><strong>Email:</strong> <span id="email"></span></p>
-                <p><strong>Nível de Conhecimento:</strong> <span id="nivel"></span></p>
-            </div>
-        </div>
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const db = getFirestore(app);
 
-        <div id="inscricoes" style="margin-top: 30px;"></div>
-    </main>
+      // Variáveis para foto
+      let userPhotoHeader = null;
+      let profilePhoto = null;
 
-    <script>
-    // Dados do localStorage
-    const usuario = JSON.parse(localStorage.getItem('usuario'));
+      // Quando o DOM estiver pronto
+      window.addEventListener('DOMContentLoaded', () => {
+        userPhotoHeader = document.getElementById('userPhoto');
+        profilePhoto = document.getElementById('mainUserPhoto');
 
-    if (usuario) {
-        document.getElementById('nome').textContent = usuario.nome;
-        document.getElementById('email').textContent = usuario.email;
-        document.getElementById('nivel').textContent = usuario.nivel;
-    } else {
-        alert('Nenhum usuário cadastrado. Volte para a página de cadastro.');
-        window.location.href = 'index.html';
-    }
+        // Configura os inputs de foto aqui, depois que o user carregar
+        setupPhotoInputs();
+      });
 
-    // Foto no header
-    const userPhotoHeader = document.getElementById('userPhoto');
-    const photoInputHeader = document.getElementById('photoInput');
-
-    photoInputHeader.addEventListener('change', function () {
-        const file = this.files[0];
-        if (file) {
+      function setupPhotoInputs() {
+        const photoInputHeader = document.getElementById('photoInput');
+        photoInputHeader.addEventListener('change', function () {
+          const file = this.files[0];
+          if (file) {
             const reader = new FileReader();
             reader.onload = function (e) {
-                userPhotoHeader.src = e.target.result;
-                localStorage.setItem('userPhotoHeader', e.target.result);
+              userPhotoHeader.src = e.target.result;
+              // Salvar no Firebase Storage ou localStorage (aqui só localStorage)
+              localStorage.setItem('userPhotoHeader', e.target.result);
             }
             reader.readAsDataURL(file);
-        }
-    });
+          }
+        });
 
-    const savedPhotoHeader = localStorage.getItem('userPhotoHeader');
-    userPhotoHeader.src = savedPhotoHeader || 'https://via.placeholder.com/40?text=Usu';
+        const savedPhotoHeader = localStorage.getItem('userPhotoHeader');
+        userPhotoHeader.src = savedPhotoHeader || 'https://via.placeholder.com/40?text=Usu';
 
-    // Foto no perfil principal
-    const profilePhoto = document.getElementById('mainUserPhoto');
-    const profilePhotoInput = document.getElementById('mainPhotoInput');
-
-    profilePhotoInput.addEventListener('change', function () {
-        const file = this.files[0];
-        if (file) {
+        const profilePhotoInput = document.getElementById('mainPhotoInput');
+        profilePhotoInput.addEventListener('change', function () {
+          const file = this.files[0];
+          if (file) {
             const reader = new FileReader();
             reader.onload = function (e) {
-                profilePhoto.src = e.target.result;
-                localStorage.setItem('userProfilePhoto', e.target.result);
+              profilePhoto.src = e.target.result;
+              localStorage.setItem('userProfilePhoto', e.target.result);
             }
             reader.readAsDataURL(file);
+          }
+        });
+
+        const savedProfilePhoto = localStorage.getItem('userProfilePhoto');
+        profilePhoto.src = savedProfilePhoto || 'https://via.placeholder.com/140?text=Usu';
+      }
+
+      // Escuta login e carrega dados do perfil
+      onAuthStateChanged(auth, async (user) => {
+        if (user) {
+          const uid = user.uid;
+          const docRef = doc(db, "usuarios", uid);
+          const docSnap = await getDoc(docRef);
+
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            document.getElementById('nome').textContent = data.nome || "Nome não informado";
+            document.getElementById('email').textContent = data.email || user.email;
+            document.getElementById('nivel').textContent = data.nivel || "Nível não informado";
+
+            // Opcional: Se quiser mostrar foto do perfil do Firebase Storage, tem que implementar
+            // Por enquanto, deixa com foto local mesmo
+
+            // Se o usuário for Gustavo, mostra inscrição (melhore seu controle depois, mas fica assim por hora)
+            if (data.nome === "Gustavo" && data.email === "felipgustavo85@gmail.com") {
+              mostrarInscricoesEFora();
+            }
+          } else {
+            alert("Perfil não encontrado no banco.");
+          }
+        } else {
+          alert("Você não está logado.");
+          window.location.href = "login.html";
         }
-    });
+      });
 
-    const savedProfilePhoto = localStorage.getItem('userProfilePhoto');
-    profilePhoto.src = savedProfilePhoto || 'https://via.placeholder.com/140?text=Usu';
-
-    // Mostrar lista de inscritos e todos usuários SOMENTE para Gustavo
-    if (usuario.nome === "Gustavo" && usuario.email === "felipgustavo85@gmail.com") {
+      // Função para mostrar inscrições, similar ao seu código localStorage
+      function mostrarInscricoesEFora() {
         const inscricoesDiv = document.getElementById('inscricoes');
         inscricoesDiv.innerHTML = "<h2>Inscrições em Projetos</h2>";
 
@@ -264,63 +270,62 @@
         containerProjetos.style.flexWrap = 'wrap';
 
         projetos.forEach(projeto => {
-            const inscritos = JSON.parse(localStorage.getItem(`inscritos_${projeto}`)) || [];
-            const divProjeto = document.createElement('div');
-            divProjeto.className = 'projeto-inscritos';
+          const inscritos = JSON.parse(localStorage.getItem(`inscritos_${projeto}`)) || [];
+          const divProjeto = document.createElement('div');
+          divProjeto.className = 'projeto-inscritos';
 
-            const titulo = document.createElement('h3');
-            titulo.textContent = projeto;
-            divProjeto.appendChild(titulo);
+          const titulo = document.createElement('h3');
+          titulo.textContent = projeto;
+          divProjeto.appendChild(titulo);
 
-            if (inscritos.length > 0) {
-                inscritos.forEach(nome => {
-                    const inscritoDiv = document.createElement('div');
-                    inscritoDiv.textContent = nome;
-                    divProjeto.appendChild(inscritoDiv);
-                });
-            } else {
-                const vazio = document.createElement('p');
-                vazio.textContent = "Nenhum inscrito ainda.";
-                divProjeto.appendChild(vazio);
-            }
+          if (inscritos.length > 0) {
+            inscritos.forEach(nome => {
+              const inscritoDiv = document.createElement('div');
+              inscritoDiv.textContent = nome;
+              divProjeto.appendChild(inscritoDiv);
+            });
+          } else {
+            const p = document.createElement('p');
+            p.textContent = "Sem inscritos";
+            divProjeto.appendChild(p);
+          }
 
-            containerProjetos.appendChild(divProjeto);
+          containerProjetos.appendChild(divProjeto);
         });
 
         inscricoesDiv.appendChild(containerProjetos);
+      }
+    </script>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li class="active"><a href="usuario.html">Perfil</a></li>
+                <li><a href="cursos.html">Cursos</a></li>
+            </ul>
+        </nav>
+        <div class="user-photo-container" title="Alterar foto de perfil">
+            <img id="userPhoto" alt="Foto do Usuário" />
+            <input id="photoInput" type="file" accept="image/*" />
+        </div>
+    </header>
 
-        // Mostrar todos os usuários cadastrados
-        const divTodosUsuarios = document.createElement('div');
-        divTodosUsuarios.id = 'todosUsuarios';
-        divTodosUsuarios.style.marginTop = '40px';
-        divTodosUsuarios.innerHTML = '<h2>Todos os Usuários Cadastrados</h2>';
+    <main>
+        <section class="profile-container">
+            <div class="photo-section" title="Alterar foto principal do perfil">
+                <img id="mainUserPhoto" alt="Foto principal do usuário" />
+                <input id="mainPhotoInput" type="file" accept="image/*" />
+                <div class="icon-pencil">✏️</div>
+            </div>
+            <div class="info-section">
+                <p><strong>Nome:</strong> <span id="nome">Carregando...</span></p>
+                <p><strong>Email:</strong> <span id="email">Carregando...</span></p>
+                <p><strong>Nível:</strong> <span id="nivel">Carregando...</span></p>
+            </div>
+        </section>
 
-        let todosUsuarios = [];
-        for (let i = 0; i < localStorage.length; i++) {
-            const chave = localStorage.key(i);
-            if (chave.startsWith('usuario_')) {
-                const userData = JSON.parse(localStorage.getItem(chave));
-                if (userData && userData.nome && userData.email) {
-                    todosUsuarios.push(userData);
-                }
-            }
-        }
-
-        if (todosUsuarios.length === 0) {
-            divTodosUsuarios.innerHTML += '<p>Nenhum usuário encontrado.</p>';
-        } else {
-            const lista = document.createElement('ul');
-            todosUsuarios.forEach(u => {
-                const item = document.createElement('li');
-                item.innerHTML = `<strong>${u.nome}</strong> — ${u.email} (${u.nivel})`;
-                lista.appendChild(item);
-            });
-            divTodosUsuarios.appendChild(lista);
-        }
-
-        document.querySelector('main').appendChild(divTodosUsuarios);
-    }
-</script>
-
+        <section id="inscricoes"></section>
+    </main>
 </body>
 </html>
