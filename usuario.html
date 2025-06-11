@@ -1,162 +1,180 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8" />
-    <title>Perfil do Usuário</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #0d1b2a;
-            margin: 0;
-            padding: 0;
-            color: #333;
-        }
-        header {
-            background-color: #023047;
-            padding: 10px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            color: white;
-        }
-        nav ul {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-            display: flex;
-        }
-        nav ul li {
-            margin-right: 20px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        nav ul li.active {
-            text-decoration: underline;
-        }
-        nav ul li a {
-            color: white;
-            text-decoration: none;
-        }
+  <meta charset="UTF-8" />
+  <title>Perfil do Usuário</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0d1b2a;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+    header {
+      background-color: #023047;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: white;
+    }
+    nav ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+    }
+    nav ul li {
+      margin-right: 20px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    nav ul li.active {
+      text-decoration: underline;
+    }
+    nav ul li a {
+      color: white;
+      text-decoration: none;
+    }
 
-        main {
-            max-width: 900px;
-            margin: 30px auto;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-        }
+    main {
+      max-width: 900px;
+      margin: 30px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+    }
 
-        .profile-container {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-            margin-bottom: 30px;
-            flex-direction: column;
-        }
-        .info-section p {
-            font-size: 1.1em;
-            margin: 8px 0;
-        }
+    .profile-container {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      margin-bottom: 30px;
+      flex-direction: column;
+    }
+    .info-section p {
+      font-size: 1.1em;
+      margin: 8px 0;
+    }
 
-        /* Inscrições container */
-        #inscricoes h2 {
-            margin-bottom: 15px;
-            color: #023047;
-        }
+    #inscricoes h2 {
+      margin-bottom: 15px;
+      color: #023047;
+    }
 
-        #inscricoes > div {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
+    #inscricoes > div {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
 
-        .projeto-inscritos {
-            background: #f0f4f8;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            padding: 15px;
-            min-width: 200px;
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
-        }
+    .projeto-inscritos {
+      background: #f0f4f8;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 15px;
+      min-width: 200px;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+    }
 
-        .projeto-inscritos h3 {
-            margin-top: 0;
-            color: #0077b6;
-            font-size: 1.2em;
-            margin-bottom: 10px;
-        }
+    .projeto-inscritos h3 {
+      margin-top: 0;
+      color: #0077b6;
+      font-size: 1.2em;
+      margin-bottom: 10px;
+    }
 
-        .projeto-inscritos div {
-            background: white;
-            padding: 6px 8px;
-            margin-bottom: 6px;
-            border-radius: 4px;
-            box-shadow: inset 1px 1px 3px rgba(0,0,0,0.05);
-            font-size: 0.95em;
-        }
+    .projeto-inscritos div {
+      background: white;
+      padding: 6px 8px;
+      margin-bottom: 6px;
+      border-radius: 4px;
+      box-shadow: inset 1px 1px 3px rgba(0,0,0,0.05);
+      font-size: 0.95em;
+    }
 
-        .projeto-inscritos p {
-            font-style: italic;
-            color: #555;
-        }
-    </style>
+    .projeto-inscritos p {
+      font-style: italic;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <ul>
+        <li class="active"><a href="usuario.html">Perfil</a></li>
+        <li><a href="cursos.html">Cursos</a></li>
+      </ul>
+    </nav>
+  </header>
 
-    <!-- Firebase SDK - modular version -->
-    <script type="module">
+  <main>
+    <section class="profile-container">
+      <div class="info-section">
+        <p><strong>Nome:</strong> <span id="nome">Carregando...</span></p>
+        <p><strong>Email:</strong> <span id="email">Carregando...</span></p>
+        <p><strong>Nível:</strong> <span id="nivel">Carregando...</span></p>
+      </div>
+    </section>
+    <section id="inscricoes"></section>
+  </main>
+
+  <!-- Firebase SDK - modular version -->
+  <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.3.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.3.0/firebase-auth.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.3.0/firebase-firestore.js";
 
-  const firebaseConfig = {
-  apiKey: "AIzaSyCKkHS2wL5IM_XEfifBr3nI4W5LhV5Yg50",
-  authDomain: "feriatecnologia-d190b.firebaseapp.com",
-  projectId: "feriatecnologia-d190b",
-  storageBucket: "feriatecnologia-d190b.appspot.com", // <-- CORRIGIDO AQUI
-  messagingSenderId: "269110622254",
-  appId: "1:269110622254:web:7d083b543cc017926147bf"
-};
+    const firebaseConfig = {
+      apiKey: "AIzaSyCKkHS2wL5IM_XEfifBr3nI4W5LhV5Yg50",
+      authDomain: "feriatecnologia-d190b.firebaseapp.com",
+      projectId: "feriatecnologia-d190b",
+      storageBucket: "feriatecnologia-d190b.appspot.com",
+      messagingSenderId: "269110622254",
+      appId: "1:269110622254:web:7d083b543cc017926147bf"
+    };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // Configura persistência e escuta o estado do usuário (unificado)
-    setPersistence(auth, browserLocalPersistence)
-      .then(() => {
-        onAuthStateChanged(auth, async (user) => {
-          if (user) {
-            const uid = user.uid;
-            const docRef = doc(db, "usuarios", uid);
-            const docSnap = await getDoc(docRef);
+    setPersistence(auth, browserLocalPersistence).then(() => {
+      onAuthStateChanged(auth, async (user) => {
+        if (user) {
+          const uid = user.uid;
+          const docRef = doc(db, "usuarios", uid);
+          const docSnap = await getDoc(docRef);
 
-            if (docSnap.exists()) {
-              const data = docSnap.data();
-              document.getElementById('nome').textContent = data.nome || "Nome não informado";
-              document.getElementById('email').textContent = data.email || user.email;
-              document.getElementById('nivel').textContent = data.nivel || "Nível não informado";
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            console.log("Dados do usuário:", data);
 
-              if (data.nome === "Gustavo" && data.email === "felipgustavo85@gmail.com") {
-                mostrarInscricoesEFora();
-              }
-            } else {
-              alert("Perfil não encontrado no banco.");
+            document.getElementById('nome').textContent = data.nome || "Nome não informado";
+            document.getElementById('email').textContent = data.email || user.email;
+            document.getElementById('nivel').textContent = data.nivel || "Nível não informado";
+
+            if (data.nome === "Gustavo" && data.email === "felipgustavo85@gmail.com") {
+              mostrarInscricoesEFora();
             }
           } else {
-            alert("Você não está logado.");
-            window.location.href = "login.html";
+            alert("Perfil não encontrado no banco.");
           }
-        });
-      })
-      .catch((error) => {
-        console.error("Erro ao configurar persistência:", error);
+        } else {
+          alert("Você não está logado.");
+          window.location.href = "login.html";
+        }
       });
+    }).catch((error) => {
+      console.error("Erro ao configurar persistência:", error);
+    });
 
     function mostrarInscricoesEFora() {
       const inscricoesDiv = document.getElementById('inscricoes');
       inscricoesDiv.innerHTML = "<h2>Inscrições em Projetos</h2>";
 
       const projetos = ["Calculadora Simples", "Conversor de Moedas"];
-
       const containerProjetos = document.createElement('div');
       containerProjetos.style.display = 'flex';
       containerProjetos.style.gap = '20px';
@@ -188,28 +206,6 @@
 
       inscricoesDiv.appendChild(containerProjetos);
     }
-    </script>
-</head>
-<body>
-    <header>
-        <nav>
-            <ul>
-                <li class="active"><a href="usuario.html">Perfil</a></li>
-                <li><a href="cursos.html">Cursos</a></li>
-            </ul>
-        </nav>
-    </header>
-
-    <main>
-        <section class="profile-container">
-            <div class="info-section">
-                <p><strong>Nome:</strong> <span id="nome">Carregando...</span></p>
-                <p><strong>Email:</strong> <span id="email">Carregando...</span></p>
-                <p><strong>Nível:</strong> <span id="nivel">Carregando...</span></p>
-            </div>
-        </section>
-
-        <section id="inscricoes"></section>
-    </main>
+  </script>
 </body>
 </html>
