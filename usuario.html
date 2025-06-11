@@ -142,10 +142,34 @@
 
     setPersistence(auth, browserLocalPersistence).then(() => {
       onAuthStateChanged(auth, async (user) => {
-        if (user) {
-          const uid = user.uid;
-          const docRef = doc(db, "usuarios", uid);
-          const docSnap = await getDoc(docRef);
+  console.log("Usuário detectado:", user);
+  if (user) {
+    const uid = user.uid;
+    console.log("UID do usuário:", uid);
+
+    const docRef = doc(db, "usuarios", uid);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      console.log("Dados do Firestore:", data);
+
+      document.getElementById('nome').textContent = data.nome || "Nome não informado";
+      document.getElementById('email').textContent = data.email || user.email;
+      document.getElementById('nivel').textContent = data.nivel || "Nível não informado";
+
+      if (data.nome === "Gustavo" && data.email === "felipgustavo85@gmail.com") {
+        mostrarInscricoesEFora();
+      }
+    } else {
+      console.warn("Documento do usuário não encontrado no Firestore.");
+    }
+  } else {
+    console.warn("Usuário não está logado.");
+    window.location.href = "login.html";
+  }
+});
+
 
           if (docSnap.exists()) {
             const data = docSnap.data();
