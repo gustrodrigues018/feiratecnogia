@@ -107,14 +107,14 @@
     import { getAuth, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.3.0/firebase-auth.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.3.0/firebase-firestore.js";
 
-    const firebaseConfig = {
-      apiKey: "SUA_API_KEY",
-      authDomain: "SEU_AUTH_DOMAIN",
-      projectId: "SEU_PROJECT_ID",
-      storageBucket: "SEU_STORAGE_BUCKET",
-      messagingSenderId: "SEU_MESSAGING_SENDER_ID",
-      appId: "SEU_APP_ID"
-    };
+  const firebaseConfig = {
+  apiKey: "AIzaSyCKkHS2wL5IM_XEfifBr3nI4W5LhV5Yg50",
+  authDomain: "feriatecnologia-d190b.firebaseapp.com",
+  projectId: "feriatecnologia-d190b",
+  storageBucket: "feriatecnologia-d190b.appspot.com", // <-- CORRIGIDO AQUI
+  messagingSenderId: "269110622254",
+  appId: "1:269110622254:web:7d083b543cc017926147bf"
+};
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
